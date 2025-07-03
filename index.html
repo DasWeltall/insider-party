@@ -553,7 +553,7 @@ footer {
   </div>
 </section>
 
-<!-- ============ END SCREEN ============ -->
+<!-- ============ END SCREEN - DISCUSSION TIME ============ -->
 <section id="endScreen" class="screen">
   <div class="end-screen">
     <h2>Discussion Time!</h2>
@@ -566,7 +566,7 @@ footer {
     
     <div class="end-buttons">
       <button class="btn" id="revealBtn">Reveal Impostors</button>
-      <button class="btn btn-secondary" onclick="location.reload()">Play Again</button>
+      <button class="btn btn-secondary" id="playAgainBtn">Play Again</button>
     </div>
   </div>
 </section>
@@ -662,14 +662,58 @@ const playerSummary  = document.getElementById('playerSummary');
 const nextBtn        = document.getElementById('nextBtn');
 const impCountDisplay = document.getElementById('impCountDisplay');
 const playerCountDisplay = document.getElementById('playerCountDisplay');
+const playAgainBtn   = document.getElementById('playAgainBtn');
 
 /* Player modal */
 const playerModal    = document.getElementById('playerModal');
 const playerList     = document.getElementById('playerList');
 const newPlayerInput = document.getElementById('newPlayerInput');
 
+/* ===== COOKIE MANAGEMENT ===== */
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getCookie(name) {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+function savePlayersToCookie() {
+  setCookie("insiderPlayers", JSON.stringify(state.players), 30);
+}
+
+function loadPlayersFromCookie() {
+  const playersCookie = getCookie("insiderPlayers");
+  if (playersCookie) {
+    try {
+      state.players = JSON.parse(playersCookie);
+      rebuildPlayerList();
+      updatePlayerSummary();
+      updateImpSelect();
+    } catch (e) {
+      console.log("Error loading players from cookie");
+    }
+  }
+}
+
 /* ===== INIT ===== */
 function init() {
+  // Load players from cookie
+  loadPlayersFromCookie();
+  
   // Populate impostor count selector
   for (let i = 1; i <= 6; i++) {
     const option = document.createElement('option');
@@ -758,6 +802,9 @@ document.getElementById('addPlayerBtn').onclick = () => {
   rebuildPlayerList();
   updatePlayerSummary();
   updateImpSelect();
+  
+  // Save players to cookie
+  savePlayersToCookie();
 };
 
 function rebuildPlayerList() {
@@ -775,6 +822,7 @@ function rebuildPlayerList() {
       rebuildPlayerList();
       updatePlayerSummary();
       updateImpSelect();
+      savePlayersToCookie(); // Save updated list to cookie
     };
     
     li.appendChild(deleteBtn);
@@ -882,6 +930,7 @@ nextBtn.onclick = () => {
 
 /* ===== END SCREEN ===== */
 function endScreenPrep() {
+  // Hide card screen, show discussion screen
   cardScreen.classList.remove('active');
   endScreen.classList.add('active');
   
@@ -898,12 +947,25 @@ function endScreenPrep() {
   };
 }
 
+playAgainBtn.onclick = () => {
+  // Reset game state
+  state.impostors = [];
+  state.current = 0;
+  state.word = "";
+  state.category = "";
+  state.revealed = false;
+  
+  // Show setup screen
+  endScreen.classList.remove('active');
+  setupScreen.classList.add('active');
+};
+
 /* ===== START ===== */
 init();
 </script>
 
 <footer>
-  InsiderParty - A word impostor game
+  InsiderParty - A word impostor game | Players saved for 30 days
 </footer>
 </body>
 </html>
