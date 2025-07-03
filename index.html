@@ -1,11 +1,12 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InsiderParty – Word Impostor Game</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-/***************  DESIGN VARS  ***************/
+/* --------------  DESIGN VARS  -------------- */
 :root {
   --clr-primary: #ff3b30;
   --clr-primary-dark: #d3342a;
@@ -17,6 +18,8 @@
   --clr-gray-300: #e7e3ec;
   --clr-gray-600: #555;
   --clr-gray-900: #1a1a1a;
+  --clr-success: #4caf50;
+  --clr-warning: #ff9800;
   --radius-lg: 1.3rem;
   --radius-md: .8rem;
   --radius-sm: .5rem;
@@ -25,46 +28,514 @@
   --shadow-lg: 0 8px 24px rgba(0,0,0,0.16);
   --font: 'Poppins', system-ui, sans-serif;
   --transition: all 0.3s ease;
-}/***************  RESET  ***************/ *{box-sizing:border-box;margin:0;padding:0} html,body{height:100%} body{ font-family:var(--font); background:linear-gradient(135deg,#f5f7fa 0%,#e4e7f1 100%); color:var(--clr-gray-900); display:flex; flex-direction:column; align-items:center; padding:1.4rem; background-attachment:fixed; }
+}
 
-/***************  GLOBALS  ***************/ h1{ font-size:2.4rem; font-weight:800; text-align:center; margin-bottom:1.2rem; background:linear-gradient(90deg,var(--clr-primary) 0%,var(--clr-secondary) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 2px 4px rgba(0,0,0,0.05); }
+/* --------------  RESET  -------------- */
+* { box-sizing: border-box; margin: 0; padding: 0 }
+html, body { height: 100% }
+body {
+  font-family: var(--font);
+  background: var(--clr-gray-100);
+  color: var(--clr-gray-900);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.4rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%);
+  background-attachment: fixed;
+}
 
-.screen{width:100%;max-width:480px;display:none;animation:fade .35s ease forwards} .screen.active{display:block} @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}} @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}} @keyframes flip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(180deg)}}
+/* --------------  GLOBALS -------------- */
+h1 { 
+  font-size: 2.4rem; 
+  font-weight: 800; 
+  text-align: center; 
+  margin-bottom: 1.2rem;
+  background: linear-gradient(90deg, var(--clr-primary) 0%, var(--clr-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
-.btn{background:var(--clr-primary);color:#fff;border:none;padding:1rem 1.8rem;font-size:1.05rem;font-weight:700;border-radius:2.2rem;cursor:pointer;transition:var(--transition);box-shadow:var(--shadow-sm);display:inline-flex;align-items:center;justify-content:center;gap:8px} .btn:hover:not([disabled]){background:var(--clr-primary-dark);transform:translateY(-2px);box-shadow:var(--shadow-md)} .btn:active:not([disabled]){transform:translateY(1px);box-shadow:var(--shadow-sm)} .btn[disabled]{opacity:.45;cursor:not-allowed} .btn-secondary{background:var(--clr-secondary)} .btn-secondary:hover:not([disabled]){background:var(--clr-secondary-dark)}
+.screen {
+  width: 100%;
+  max-width: 480px;
+  display: none;
+  animation: fade 0.35s ease forwards;
+}
 
-/***************  SETUP  ***************/ .setup-container{background:#fff;border-radius:var(--radius-lg);padding:1.8rem;box-shadow:var(--shadow-md);margin-top:1rem} .setup-row{margin-bottom:1.6rem} .setup-row label{display:block;font-weight:600;margin-bottom:.6rem;font-size:1rem} #playerSummary{background:var(--clr-gray-200);padding:.7rem 1.2rem;border-radius:var(--radius-md);font-weight:600;margin-bottom:1.2rem;display:inline-block;min-width:150px} #impCount{width:100%;padding:.8rem 1rem;border-radius:var(--radius-md);border:2px solid var(--clr-gray-300);font-size:1rem;background:#fff;cursor:pointer} #impCount:focus{border-color:var(--clr-primary);outline:none}
+.screen.active {
+  display: block;
+}
 
-/***************  CATEGORY LIST  ***************/ .cat-item{position:relative;display:flex;align-items:center;gap:.8rem;padding:1.1rem 1.2rem 1.1rem 3.8rem;margin-bottom:.8rem;background:#fff;border-radius:var(--radius-md);font-weight:600;cursor:pointer;user-select:none;transition:var(--transition);box-shadow:var(--shadow-sm);border:2px solid transparent} .cat-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)} .cat-item[data-selected="true"]{background:color-mix(in srgb,var(--clr-primary) 10%,#fff);border-color:var(--clr-primary)} .cat-item[data-locked="true"]{opacity:.5;cursor:not-allowed} .cat-item::before{content:attr(data-emoji);position:absolute;left:1.2rem;font-size:1.5rem} .cat-check{margin-left:auto;font-size:1.25rem;color:var(--clr-primary)} .cat-lock{margin-left:auto;font-size:1.1rem;color:var(--clr-gray-600)}
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px) }
+  to { opacity: 1; transform: none }
+}
 
-/***************  CARD SCREEN  ***************/ .card-screen{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center} .card-container{perspective:1000px;width:100%;max-width:440px;height:300px;margin:0 auto 2rem} .card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s;cursor:pointer} .card.flipped{transform:rotateY(180deg)} .card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--radius-lg);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;box-shadow:var(--shadow-lg)} .card-front{background:var(--clr-primary);color:#fff;text-align:center} .card-front h2{font-size:1.8rem;margin-bottom:1rem;color:#fff} .card-back{background:#fff;color:var(--clr-gray-900);transform:rotateY(180deg);text-align:center;padding:2.5rem 1.5rem} .card-back h2{font-size:1.8rem;margin-bottom:1.2rem;color:var(--clr-primary)} .card-back p{font-size:1.4rem;font-weight:700;line-height:1.5;white-space:pre-line} .card-info{margin-top:1.5rem;font-size:1rem;font-weight:600;color:var(--clr-gray-600);background:var(--clr-gray-100);padding:.8rem 1.2rem;border-radius:var(--radius-md)} .card-instruction{margin-top:1.5rem;font-size:1rem;color:var(--clr-gray-600);font-weight:500;text-align:center;animation:pulse 2s infinite}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
 
-/***************  END SCREEN  ***************/ .end-screen{background:#fff;border-radius:var(--radius-lg);padding:2.2rem 1.8rem;box-shadow:var(--shadow-md);text-align:center;max-width:480px;margin:0 auto} .end-screen h2{font-size:2rem;margin-bottom:1.5rem;color:var(--clr-primary)} #summary{background:var(--clr-gray-100);padding:1.5rem;border-radius:var(--radius-md);font-size:1.1rem;line-height:1.6;margin:1.5rem 0 1.2rem;text-align:left} #timer{font-weight:700;font-size:1.4rem;margin-bottom:2rem;color:var(--clr-secondary)} .end-buttons{display:flex;flex-direction:column;gap:1rem;max-width:280px;margin:0 auto}
+@keyframes flip {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(180deg); }
+}
 
-/***************  FOOTER  ***************/ footer{margin-top:2rem;text-align:center;color:var(--clr-gray-600);font-size:.9rem;padding:1rem}
+.btn {
+  background: var(--clr-primary);
+  color: #fff;
+  border: none;
+  padding: 1rem 1.8rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 2.2rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
-/***************  RESPONSIVE  ***************/ @media(max-width:480px){h1{font-size:2rem}.setup-container{padding:1.4rem}.card-container{height:280px}.card-back h2{font-size:1.6rem}.card-back p{font-size:1.3rem}} @media(max-width:380px){body{padding:1rem}.card-container{height:260px}.card-back{padding:1.8rem 1.2rem}} </style>
+.btn:hover:not([disabled]) {
+  background: var(--clr-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
 
+.btn:active:not([disabled]) {
+  transform: translateY(1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--clr-secondary);
+}
+
+.btn-secondary:hover:not([disabled]) {
+  background: var(--clr-secondary-dark);
+}
+
+/* --------------  SETUP SCREEN -------------- */
+.setup-container {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 1.8rem;
+  box-shadow: var(--shadow-md);
+  margin-top: 1rem;
+}
+
+.setup-row {
+  margin-bottom: 1.6rem;
+}
+
+.setup-row label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+}
+
+#playerSummary {
+  background: var(--clr-gray-200);
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  display: inline-block;
+  min-width: 150px;
+}
+
+#impCount {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--clr-gray-300);
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+}
+
+#impCount:focus {
+  border-color: var(--clr-primary);
+  outline: none;
+}
+
+/* --------------  CATEGORY LIST -------------- */
+.cat-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: 1.1rem 1.2rem 1.1rem 3.8rem;
+  margin-bottom: .8rem;
+  background: #fff;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  border: 2px solid transparent;
+}
+
+.cat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.cat-item[data-selected="true"] {
+  background: color-mix(in srgb, var(--clr-primary) 10%, #fff);
+  border-color: var(--clr-primary);
+}
+
+.cat-item[data-locked="true"] {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.cat-item::before {
+  content: attr(data-emoji);
+  position: absolute;
+  left: 1.2rem;
+  font-size: 1.5rem;
+}
+
+.cat-check {
+  margin-left: auto;
+  font-size: 1.25rem;
+  color: var(--clr-primary);
+}
+
+.cat-lock {
+  margin-left: auto;
+  font-size: 1.1rem;
+  color: var(--clr-gray-600);
+}
+
+/* --------------  CARD SCREEN -------------- */
+.card-screen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-container {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 440px;
+  height: 300px;
+  margin: 0 auto 2rem;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  cursor: pointer;
+}
+
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.card-front {
+  background: var(--clr-primary);
+  color: white;
+  text-align: center;
+}
+
+.card-front h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.card-back {
+  background: white;
+  color: var(--clr-gray-900);
+  transform: rotateY(180deg);
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.card-back h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+  color: var(--clr-primary);
+}
+
+.card-back p {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.card-info {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--clr-gray-600);
+  background: var(--clr-gray-100);
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--radius-md);
+}
+
+.next-btn-container {
+  margin-top: 2rem;
+  width: 100%;
+  text-align: center;
+}
+
+/* --------------  FULLSCREEN MODAL (Players) -------------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  display: none;
+  backdrop-filter: blur(3px);
+}
+
+.backdrop.show {
+  display: flex;
+  animation: fade 0.3s ease;
+}
+
+.modal {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 420px;
+  max-height: 85vh;
+  padding: 1.8rem;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: fade 0.3s ease;
+}
+
+.modal h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--clr-gray-900);
+}
+
+.player-list {
+  list-style: none;
+  margin-bottom: 1.5rem;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.player-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0.8rem;
+  border-bottom: 1px solid var(--clr-gray-300);
+  transition: background 0.2s;
+}
+
+.player-list li:hover {
+  background: var(--clr-gray-100);
+  border-radius: var(--radius-sm);
+}
+
+.player-list li:last-child {
+  border-bottom: none;
+}
+
+.player-list button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--clr-primary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.player-list button:hover {
+  background: color-mix(in srgb, var(--clr-primary) 15%, #fff);
+}
+
+.input-row {
+  display: flex;
+  gap: 0.55rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-row input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--clr-gray-300);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.input-row input:focus {
+  border-color: var(--clr-primary);
+  outline: none;
+}
+
+.modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* --------------  END SCREEN -------------- */
+.end-screen {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 1.8rem;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.end-screen h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--clr-primary);
+}
+
+#summary {
+  background: var(--clr-gray-100);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 1.5rem 0 2.5rem;
+  text-align: left;
+}
+
+.end-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+/* --------------  FOOTER -------------- */
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: var(--clr-gray-600);
+  font-size: 0.9rem;
+  padding: 1rem;
+}
+
+/* --------------  RESPONSIVE -------------- */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .setup-container {
+    padding: 1.4rem;
+  }
+  
+  .card-container {
+    height: 280px;
+  }
+  
+  .card-back h2 {
+    font-size: 1.6rem;
+  }
+  
+  .card-back p {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 380px) {
+  body {
+    padding: 1rem;
+  }
+  
+  .card-container {
+    height: 260px;
+  }
+  
+  .card-back {
+    padding: 1.8rem 1.2rem;
+  }
+}
+</style>
 </head>
 <body>
-<h1>InsiderParty</h1><!-- ***************  SETUP SCREEN  *************** --><section id="setup" class="screen active">
+
+<h1>InsiderParty</h1>
+
+<!-- ============ SETUP SCREEN ============ -->
+<section id="setup" class="screen active">
   <div class="setup-container">
     <div class="setup-row">
       <label>Players:</label>
       <p id="playerSummary">0 players</p>
-      <button class="btn" id="managePlayersBtn">➕ Manage Players</button>
+      <button class="btn" id="managePlayersBtn">Manage Players</button>
     </div>
+    
     <div class="setup-row">
       <label for="impCount">Number of Impostors:</label>
       <select id="impCount"></select>
     </div>
+    
     <div class="setup-row">
       <label>Categories:</label>
       <div id="categoryList"></div>
     </div>
-    <button class="btn" id="startBtn" style="width:100%;padding:1.1rem;margin-top:1rem">🎮 Start Game</button>
+    
+    <button class="btn" id="startBtn" style="width:100%; padding:1.1rem; margin-top:1rem;">
+      Start Game
+    </button>
   </div>
-</section><!-- ***************  CARD SCREEN  *************** --><section id="cardScreen" class="screen card-screen">
+</section>
+
+<!-- ============ CARD SCREEN ============ -->
+<section id="cardScreen" class="screen card-screen">
   <div class="card-container">
     <div class="card" id="cardBox">
       <div class="card-face card-front">
@@ -74,14 +545,365 @@
       <div class="card-face card-back">
         <h2 id="rolePlayerName">Player</h2>
         <p id="roleText"></p>
-        <div class="card-info" id="roleInfo"></div>
       </div>
     </div>
   </div>
-  <p class="card-instruction">Tap card to continue</p>
-</section><!-- ***************  END SCREEN  *************** --><section id="endScreen" class="screen">
+  <div class="next-btn-container">
+    <button class="btn" id="nextBtn">Pass Device to Next Player</button>
+  </div>
+</section>
+
+<!-- ============ END SCREEN ============ -->
+<section id="endScreen" class="screen">
   <div class="end-screen">
     <h2>Discussion Time!</h2>
     <p>All players have seen their roles. Now try to find the impostors!</p>
-    <div id="summary"></div>
-    <
+    
+    <div id="summary" style="margin:1.5rem 0 2rem">
+      <p>There are <strong id="impCountDisplay">1</strong> impostor(s) among <strong id="playerCountDisplay">0</strong> players.</p>
+      <p>Discuss and vote to find the impostor(s)!</p>
+    </div>
+    
+    <div class="end-buttons">
+      <button class="btn" id="revealBtn">Reveal Impostors</button>
+      <button class="btn btn-secondary" onclick="location.reload()">Play Again</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLAYER MODAL ============ -->
+<div id="playerModal" class="backdrop">
+  <div class="modal">
+    <h2>Players</h2>
+    <ul id="playerList" class="player-list"></ul>
+    
+    <div class="input-row">
+      <input id="newPlayerInput" placeholder="Player name" maxlength="20">
+      <button class="btn" id="addPlayerBtn" style="padding:.8rem 1.4rem">Add</button>
+    </div>
+    
+    <div class="modal-buttons">
+      <button class="btn" id="closePlayerBtn" style="width:100%">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== DICTIONARY ===== */
+const CATEGORY_WORDS = {
+  "Random Word": [
+    "apple", "banana", "car", "desk", "elephant", "forest", "garden", "house", "island", 
+    "jungle", "kangaroo", "lamp", "mountain", "notebook", "ocean", "pizza", "queen", 
+    "river", "sun", "tree", "umbrella", "violin", "window", "xylophone", "yacht", "zebra"
+  ],
+  "Daily Life": [
+    "coffee", "phone", "bed", "shoes", "wallet", "keys", "chair", "table", "shower", 
+    "toothbrush", "breakfast", "bus", "work", "home", "family", "friend", "movie", 
+    "music", "book", "shopping", "exercise", "dinner", "sleep", "weekend", "vacation"
+  ],
+  "Tech": [
+    "computer", "internet", "smartphone", "software", "hardware", "algorithm", "database", 
+    "network", "programming", "cybersecurity", "artificial", "intelligence", "robot", 
+    "virtual", "reality", "cloud", "data", "encryption", "blockchain", "browser", "app", 
+    "website", "server", "coding", "developer"
+  ],
+  "Sports": [
+    "football", "basketball", "tennis", "soccer", "volleyball", "baseball", "golf", 
+    "swimming", "cycling", "running", "hockey", "boxing", "surfing", "skiing", "skating", 
+    "rugby", "cricket", "badminton", "wrestling", "archery", "marathon", "olympics", 
+    "medal", "champion", "stadium"
+  ],
+  "Arts": [
+    "painting", "sculpture", "music", "dance", "theater", "cinema", "photography", 
+    "literature", "poetry", "drawing", "design", "architecture", "pottery", "ballet", 
+    "opera", "gallery", "exhibition", "concert", "performance", "artist", "brush", 
+    "canvas", "palette", "stage", "costume"
+  ],
+  "Geography": [
+    "mountain", "river", "ocean", "continent", "island", "desert", "forest", "valley", 
+    "volcano", "canyon", "waterfall", "glacier", "cave", "beach", "cliff", "plateau", 
+    "delta", "peninsula", "archipelago", "tundra", "savanna", "jungle", "reef", 
+    "country", "city"
+  ]
+};
+
+/* ===== CATEGORY META ===== */
+const CATEGORY_META = [
+  {name:"Random Word", emoji:"🎲", locked:false},
+  {name:"Daily Life", emoji:"🏡", locked:false},
+  {name:"Tech", emoji:"💻", locked:false},
+  {name:"Sports", emoji:"⚽", locked:false},
+  {name:"Arts", emoji:"🎨", locked:false},
+  {name:"Geography", emoji:"🌍", locked:false}
+];
+
+/* ===== STATE ===== */
+const state = {
+  players: [],
+  impostors: [],
+  current: 0,
+  word: "",
+  category: "",
+  revealed: false
+};
+
+/* ===== ELEMENTS ===== */
+const impSelect      = document.getElementById('impCount');
+const startBtn       = document.getElementById('startBtn');
+const categoryList   = document.getElementById('categoryList');
+const setupScreen    = document.getElementById('setup');
+const cardScreen     = document.getElementById('cardScreen');
+const endScreen      = document.getElementById('endScreen');
+const cardBox        = document.getElementById('cardBox');
+const playerNameEl   = document.getElementById('playerName');
+const rolePlayerName = document.getElementById('rolePlayerName');
+const roleTextEl     = document.getElementById('roleText');
+const playerSummary  = document.getElementById('playerSummary');
+const nextBtn        = document.getElementById('nextBtn');
+const impCountDisplay = document.getElementById('impCountDisplay');
+const playerCountDisplay = document.getElementById('playerCountDisplay');
+
+/* Player modal */
+const playerModal    = document.getElementById('playerModal');
+const playerList     = document.getElementById('playerList');
+const newPlayerInput = document.getElementById('newPlayerInput');
+
+/* ===== INIT ===== */
+function init() {
+  // Populate impostor count selector
+  for (let i = 1; i <= 6; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = i;
+    impSelect.appendChild(option);
+  }
+  
+  // Set default impostor count
+  impSelect.value = 1;
+  
+  // Create category list
+  CATEGORY_META.forEach(meta => {
+    const div = document.createElement('div');
+    div.className = 'cat-item';
+    div.dataset.locked = meta.locked;
+    div.dataset.selected = !meta.locked; // Default to selected if not locked
+    div.dataset.emoji = meta.emoji;
+    div.textContent = meta.name;
+    
+    // Add checkmark or lock icon
+    if (meta.locked) {
+      div.innerHTML += "<span class='cat-lock'>🔒</span>";
+    } else {
+      div.innerHTML += "<span class='cat-check'>✓</span>";
+    }
+    
+    // Add click handler
+    div.onclick = () => {
+      if (meta.locked) return;
+      const selected = div.dataset.selected === 'true';
+      div.dataset.selected = !selected;
+      div.querySelector('.cat-check').textContent = !selected ? "✓" : "";
+    };
+    
+    categoryList.appendChild(div);
+  });
+  
+  updateImpSelect();
+}
+
+function updateImpSelect() {
+  const maxImp = Math.min(state.players.length - 1 || 1, 6);
+  impSelect.innerHTML = '';
+  
+  for (let i = 1; i <= maxImp; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = i;
+    impSelect.appendChild(option);
+  }
+  
+  // Set to max possible if current value is higher
+  if (parseInt(impSelect.value) > maxImp) {
+    impSelect.value = maxImp;
+  }
+}
+
+function updatePlayerSummary() {
+  playerSummary.textContent = `${state.players.length} player${state.players.length !== 1 ? 's' : ''}`;
+}
+
+/* ===== PLAYER MODAL ===== */
+document.getElementById('managePlayersBtn').onclick = () => {
+  rebuildPlayerList();
+  playerModal.classList.add('show');
+  newPlayerInput.focus();
+};
+
+document.getElementById('closePlayerBtn').onclick = () => {
+  playerModal.classList.remove('show');
+};
+
+document.getElementById('addPlayerBtn').onclick = () => {
+  const name = newPlayerInput.value.trim();
+  if (!name) return;
+  
+  // Prevent duplicate names
+  if (state.players.includes(name)) {
+    alert('Player name already exists!');
+    return;
+  }
+  
+  state.players.push(name);
+  newPlayerInput.value = '';
+  rebuildPlayerList();
+  updatePlayerSummary();
+  updateImpSelect();
+};
+
+function rebuildPlayerList() {
+  playerList.innerHTML = '';
+  
+  state.players.forEach((name, index) => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '✖';
+    deleteBtn.title = "Remove player";
+    deleteBtn.onclick = () => {
+      state.players.splice(index, 1);
+      rebuildPlayerList();
+      updatePlayerSummary();
+      updateImpSelect();
+    };
+    
+    li.appendChild(deleteBtn);
+    playerList.appendChild(li);
+  });
+}
+
+// Add player when pressing Enter in input field
+newPlayerInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    document.getElementById('addPlayerBtn').click();
+  }
+});
+
+/* ===== GAME LOGIC ===== */
+startBtn.onclick = () => {
+  if (state.players.length < 3) {
+    alert('You need at least 3 players to start the game!');
+    return;
+  }
+  
+  const impCount = parseInt(impSelect.value);
+  if (impCount >= state.players.length) {
+    alert('Number of impostors must be less than number of players!');
+    return;
+  }
+  
+  // Get selected categories
+  const selectedCategories = [...document.querySelectorAll('.cat-item[data-selected="true"]')]
+    .map(el => el.textContent.replace('✓', '').replace('🔒', '').trim());
+  
+  if (!selectedCategories.length) {
+    alert('Please select at least one category!');
+    return;
+  }
+  
+  // Choose a random category
+  state.category = selectedCategories[Math.floor(Math.random() * selectedCategories.length)];
+  
+  // Get words for the selected category
+  const wordPool = CATEGORY_WORDS[state.category] || CATEGORY_WORDS["Random Word"];
+  state.word = wordPool[Math.floor(Math.random() * wordPool.length)];
+  
+  // Choose impostors
+  state.impostors = [];
+  const playerPool = [...state.players];
+  
+  while (state.impostors.length < impCount) {
+    const randomIndex = Math.floor(Math.random() * playerPool.length);
+    state.impostors.push(playerPool.splice(randomIndex, 1)[0]);
+  }
+  
+  // Switch to card screen
+  setupScreen.classList.remove('active');
+  cardScreen.classList.add('active');
+  
+  // Reset game state
+  state.current = 0;
+  state.revealed = false;
+  showCard();
+};
+
+function showCard() {
+  // Reset card to front
+  cardBox.classList.remove('flipped');
+  state.revealed = false;
+  
+  // Check if all players have seen their cards
+  if (state.current >= state.players.length) {
+    endScreenPrep();
+    return;
+  }
+  
+  const name = state.players[state.current];
+  playerNameEl.textContent = name;
+  rolePlayerName.textContent = name;
+  
+  const isImpostor = state.impostors.includes(name);
+  
+  if (isImpostor) {
+    roleTextEl.textContent = "You are the IMPOSTOR!";
+  } else {
+    roleTextEl.textContent = state.word;
+  }
+}
+
+cardBox.onclick = () => {
+  if (!state.revealed) {
+    // Reveal the card
+    cardBox.classList.add('flipped');
+    state.revealed = true;
+  }
+};
+
+nextBtn.onclick = () => {
+  if (!state.revealed) {
+    alert('Please reveal your card first!');
+    return;
+  }
+  
+  // Move to next player
+  state.current++;
+  showCard();
+};
+
+/* ===== END SCREEN ===== */
+function endScreenPrep() {
+  cardScreen.classList.remove('active');
+  endScreen.classList.add('active');
+  
+  // Update player and impostor counts
+  impCountDisplay.textContent = state.impostors.length;
+  playerCountDisplay.textContent = state.players.length;
+  
+  revealBtn.onclick = () => {
+    revealBtn.disabled = true;
+    document.getElementById('summary').innerHTML = `
+      <p><strong>Impostor${state.impostors.length === 1 ? '' : 's'}:</strong> ${state.impostors.join(', ')}</p>
+      <p>The game has ended. Click "Play Again" to start a new game.</p>
+    `;
+  };
+}
+
+/* ===== START ===== */
+init();
+</script>
+
+<footer>
+  InsiderParty - A word impostor game
+</footer>
+</body>
+</html>
