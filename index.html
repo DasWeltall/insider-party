@@ -535,7 +535,7 @@ footer {
 </section>
 
 <!-- ============ CARD SCREEN ============ -->
-<section id="cardScreen" class="screen card-screen">
+<section id="cardScreen" class="screen"> 
   <div class="card-container">
     <div class="card" id="cardBox">
       <div class="card-face card-front">
@@ -663,6 +663,7 @@ const nextBtn        = document.getElementById('nextBtn');
 const impCountDisplay = document.getElementById('impCountDisplay');
 const playerCountDisplay = document.getElementById('playerCountDisplay');
 const playAgainBtn   = document.getElementById('playAgainBtn');
+const revealBtn      = document.getElementById('revealBtn'); 
 
 /* Player modal */
 const playerModal    = document.getElementById('playerModal');
@@ -878,6 +879,7 @@ startBtn.onclick = () => {
   // Switch to card screen
   setupScreen.classList.remove('active');
   cardScreen.classList.add('active');
+  endScreen.classList.remove('active'); // Ensure end screen is hidden
   
   // Reset game state
   state.current = 0;
@@ -938,14 +940,21 @@ function endScreenPrep() {
   impCountDisplay.textContent = state.impostors.length;
   playerCountDisplay.textContent = state.players.length;
   
-  revealBtn.onclick = () => {
-    revealBtn.disabled = true;
-    document.getElementById('summary').innerHTML = `
-      <p><strong>Impostor${state.impostors.length === 1 ? '' : 's'}:</strong> ${state.impostors.join(', ')}</p>
-      <p>The game has ended. Click "Play Again" to start a new game.</p>
-    `;
-  };
+  revealBtn.disabled = false; // Ensure reveal button is enabled for a new game
+  document.getElementById('summary').innerHTML = `
+    <p>There are <strong id="impCountDisplay">${state.impostors.length}</strong> impostor(s) among <strong id="playerCountDisplay">${state.players.length}</strong> players.</p>
+    <p>Discuss and vote to find the impostor(s)!</p>
+  `;
 }
+
+revealBtn.onclick = () => {
+  revealBtn.disabled = true;
+  document.getElementById('summary').innerHTML = `
+    <p><strong>Impostor${state.impostors.length === 1 ? '' : 's'}:</strong> ${state.impostors.join(', ')}</p>
+    <p>The game has ended. Click "Play Again" to start a new game.</p>
+  `;
+};
+} // End of endScreenPrep function
 
 playAgainBtn.onclick = () => {
   // Reset game state
@@ -957,6 +966,7 @@ playAgainBtn.onclick = () => {
   
   // Show setup screen
   endScreen.classList.remove('active');
+  cardScreen.classList.remove('active'); // Ensure card screen is hidden
   setupScreen.classList.add('active');
 };
 
@@ -969,3 +979,4 @@ init();
 </footer>
 </body>
 </html>
+
