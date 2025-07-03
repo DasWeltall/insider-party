@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InsiderParty – Word Impostor Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/***************  DESIGN VARS  ***************/
+:root {
+  --clr-primary: #ff3b30;
+  --clr-primary-dark: #d3342a;
+  --clr-primary-light: #ff6b63;
+  --clr-secondary: #4a6cf7;
+  --clr-secondary-dark: #3a5ae5;
+  --clr-gray-100: #f5f2f8;
+  --clr-gray-200: #eae6f1;
+  --clr-gray-300: #e7e3ec;
+  --clr-gray-600: #555;
+  --clr-gray-900: #1a1a1a;
+  --radius-lg: 1.3rem;
+  --radius-md: .8rem;
+  --radius-sm: .5rem;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.16);
+  --font: 'Poppins', system-ui, sans-serif;
+  --transition: all 0.3s ease;
+}/***************  RESET  ***************/ *{box-sizing:border-box;margin:0;padding:0} html,body{height:100%} body{ font-family:var(--font); background:linear-gradient(135deg,#f5f7fa 0%,#e4e7f1 100%); color:var(--clr-gray-900); display:flex; flex-direction:column; align-items:center; padding:1.4rem; background-attachment:fixed; }
+
+/***************  GLOBALS  ***************/ h1{ font-size:2.4rem; font-weight:800; text-align:center; margin-bottom:1.2rem; background:linear-gradient(90deg,var(--clr-primary) 0%,var(--clr-secondary) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 2px 4px rgba(0,0,0,0.05); }
+
+.screen{width:100%;max-width:480px;display:none;animation:fade .35s ease forwards} .screen.active{display:block} @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}} @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}} @keyframes flip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(180deg)}}
+
+.btn{background:var(--clr-primary);color:#fff;border:none;padding:1rem 1.8rem;font-size:1.05rem;font-weight:700;border-radius:2.2rem;cursor:pointer;transition:var(--transition);box-shadow:var(--shadow-sm);display:inline-flex;align-items:center;justify-content:center;gap:8px} .btn:hover:not([disabled]){background:var(--clr-primary-dark);transform:translateY(-2px);box-shadow:var(--shadow-md)} .btn:active:not([disabled]){transform:translateY(1px);box-shadow:var(--shadow-sm)} .btn[disabled]{opacity:.45;cursor:not-allowed} .btn-secondary{background:var(--clr-secondary)} .btn-secondary:hover:not([disabled]){background:var(--clr-secondary-dark)}
+
+/***************  SETUP  ***************/ .setup-container{background:#fff;border-radius:var(--radius-lg);padding:1.8rem;box-shadow:var(--shadow-md);margin-top:1rem} .setup-row{margin-bottom:1.6rem} .setup-row label{display:block;font-weight:600;margin-bottom:.6rem;font-size:1rem} #playerSummary{background:var(--clr-gray-200);padding:.7rem 1.2rem;border-radius:var(--radius-md);font-weight:600;margin-bottom:1.2rem;display:inline-block;min-width:150px} #impCount{width:100%;padding:.8rem 1rem;border-radius:var(--radius-md);border:2px solid var(--clr-gray-300);font-size:1rem;background:#fff;cursor:pointer} #impCount:focus{border-color:var(--clr-primary);outline:none}
+
+/***************  CATEGORY LIST  ***************/ .cat-item{position:relative;display:flex;align-items:center;gap:.8rem;padding:1.1rem 1.2rem 1.1rem 3.8rem;margin-bottom:.8rem;background:#fff;border-radius:var(--radius-md);font-weight:600;cursor:pointer;user-select:none;transition:var(--transition);box-shadow:var(--shadow-sm);border:2px solid transparent} .cat-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)} .cat-item[data-selected="true"]{background:color-mix(in srgb,var(--clr-primary) 10%,#fff);border-color:var(--clr-primary)} .cat-item[data-locked="true"]{opacity:.5;cursor:not-allowed} .cat-item::before{content:attr(data-emoji);position:absolute;left:1.2rem;font-size:1.5rem} .cat-check{margin-left:auto;font-size:1.25rem;color:var(--clr-primary)} .cat-lock{margin-left:auto;font-size:1.1rem;color:var(--clr-gray-600)}
+
+/***************  CARD SCREEN  ***************/ .card-screen{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center} .card-container{perspective:1000px;width:100%;max-width:440px;height:300px;margin:0 auto 2rem} .card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s;cursor:pointer} .card.flipped{transform:rotateY(180deg)} .card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--radius-lg);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;box-shadow:var(--shadow-lg)} .card-front{background:var(--clr-primary);color:#fff;text-align:center} .card-front h2{font-size:1.8rem;margin-bottom:1rem;color:#fff} .card-back{background:#fff;color:var(--clr-gray-900);transform:rotateY(180deg);text-align:center;padding:2.5rem 1.5rem} .card-back h2{font-size:1.8rem;margin-bottom:1.2rem;color:var(--clr-primary)} .card-back p{font-size:1.4rem;font-weight:700;line-height:1.5;white-space:pre-line} .card-info{margin-top:1.5rem;font-size:1rem;font-weight:600;color:var(--clr-gray-600);background:var(--clr-gray-100);padding:.8rem 1.2rem;border-radius:var(--radius-md)} .card-instruction{margin-top:1.5rem;font-size:1rem;color:var(--clr-gray-600);font-weight:500;text-align:center;animation:pulse 2s infinite}
+
+/***************  END SCREEN  ***************/ .end-screen{background:#fff;border-radius:var(--radius-lg);padding:2.2rem 1.8rem;box-shadow:var(--shadow-md);text-align:center;max-width:480px;margin:0 auto} .end-screen h2{font-size:2rem;margin-bottom:1.5rem;color:var(--clr-primary)} #summary{background:var(--clr-gray-100);padding:1.5rem;border-radius:var(--radius-md);font-size:1.1rem;line-height:1.6;margin:1.5rem 0 1.2rem;text-align:left} #timer{font-weight:700;font-size:1.4rem;margin-bottom:2rem;color:var(--clr-secondary)} .end-buttons{display:flex;flex-direction:column;gap:1rem;max-width:280px;margin:0 auto}
+
+/***************  FOOTER  ***************/ footer{margin-top:2rem;text-align:center;color:var(--clr-gray-600);font-size:.9rem;padding:1rem}
+
+/***************  RESPONSIVE  ***************/ @media(max-width:480px){h1{font-size:2rem}.setup-container{padding:1.4rem}.card-container{height:280px}.card-back h2{font-size:1.6rem}.card-back p{font-size:1.3rem}} @media(max-width:380px){body{padding:1rem}.card-container{height:260px}.card-back{padding:1.8rem 1.2rem}} </style>
+
+</head>
+<body>
+<h1>InsiderParty</h1><!-- ***************  SETUP SCREEN  *************** --><section id="setup" class="screen active">
+  <div class="setup-container">
+    <div class="setup-row">
+      <label>Players:</label>
+      <p id="playerSummary">0 players</p>
+      <button class="btn" id="managePlayersBtn">➕ Manage Players</button>
+    </div>
+    <div class="setup-row">
+      <label for="impCount">Number of Impostors:</label>
+      <select id="impCount"></select>
+    </div>
+    <div class="setup-row">
+      <label>Categories:</label>
+      <div id="categoryList"></div>
+    </div>
+    <button class="btn" id="startBtn" style="width:100%;padding:1.1rem;margin-top:1rem">🎮 Start Game</button>
+  </div>
+</section><!-- ***************  CARD SCREEN  *************** --><section id="cardScreen" class="screen card-screen">
+  <div class="card-container">
+    <div class="card" id="cardBox">
+      <div class="card-face card-front">
+        <h2 id="playerName">Player</h2>
+        <p>Tap to reveal your role</p>
+      </div>
+      <div class="card-face card-back">
+        <h2 id="rolePlayerName">Player</h2>
+        <p id="roleText"></p>
+        <div class="card-info" id="roleInfo"></div>
+      </div>
+    </div>
+  </div>
+  <p class="card-instruction">Tap card to continue</p>
+</section><!-- ***************  END SCREEN  *************** --><section id="endScreen" class="screen">
+  <div class="end-screen">
+    <h2>Discussion Time!</h2>
+    <p>All players have seen their roles. Now try to find the impostors!</p>
+    <div id="summary"></div>
+    <
