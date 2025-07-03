@@ -663,7 +663,7 @@ const nextBtn        = document.getElementById('nextBtn');
 const impCountDisplay = document.getElementById('impCountDisplay');
 const playerCountDisplay = document.getElementById('playerCountDisplay');
 const playAgainBtn   = document.getElementById('playAgainBtn');
-const revealBtn      = document.getElementById('revealBtn'); 
+const revealBtn      = document.getElementById('revealBtn'); // Corrected: Only one declaration
 
 /* Player modal */
 const playerModal    = document.getElementById('playerModal');
@@ -941,12 +941,7 @@ function endScreenPrep() {
   playerCountDisplay.textContent = state.players.length;
   
   revealBtn.disabled = false; // Ensure reveal button is enabled for a new game
-  document.getElementById('summary').innerHTML = `
-    <p>There are <strong id="impCountDisplay">${state.impostors.length}</strong> impostor(s) among <strong id="playerCountDisplay">${state.players.length}</strong> players.</p>
-    <p>Discuss and vote to find the impostor(s)!</p>
-  `;
-}
-
+  document
 revealBtn.onclick = () => {
   revealBtn.disabled = true;
   document.getElementById('summary').innerHTML = `
@@ -979,4 +974,3 @@ init();
 </footer>
 </body>
 </html>
-
